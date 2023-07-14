@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+    <head>
+        <title>obb</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <script src="https://obniz.com/js/jquery-3.2.1.min.js"></script>
+        <script src="https://unpkg.com/obniz@3.x/obniz.js"></script>
+    </head>
+    <body>
+        <div class="obniz-debug">
+            <div class="titlemessage" id="titlemessage">
+                <h1 class="title" id="title">!!Welcome Push Button Gaaaaaaaaame!!</h1>
+                <h1 class="countdown" id="countdown"></h1>
+            </div>
+
+            <div class="btn">
+                <button class="start_button" id="start_button">START</button>
+                <button class="reset_button" id="reset_button">RESET</button>
+                <button class="result_button" id="result_button">RESULT</button>
+                <button class="get_button" id="get_button">Chack your past Score</button>
+                <h2 class="counter" id="counter"></h2>
+            </div>
+
+            <div>
+                <input type="text" class="text" id="text" placeholder="StudentNo...">
+                <button class="submit" id="submit">submit</button>
+                <h3 id="result"></h3><br>
+                <h3 id="result2"></h3>
+            </div>
+        </div>
+
+        <!--CSS-->
+        <style>
+
+        </style>
+
+        <!--JS-->
+
+        <script>
+          var obniz = new Obniz("7238-6542");
+          obniz.onconnect = async function() {//接続したら.
+
+
+
+
+            //resultとStudentNoを投げる
+            //get
+            var parsedData;
+            function getdata(){
+              fetch('https://sheetdb.io/api/v1/kbgbkpc87u9vh')
+              .then(function (response) {
+                return response.json();
+              })
+              .then(function (data) {
+                parsedData = JSON.parse(data);
+                //console.log(parsedData);
+              })
+              .catch(function (error) {
+                console.error('Error:', error);
+              });
+            }
+
+            //post
+            function postdata(){
+              var num = document.getElementById('text').value
+              const data = {
+                  StudentNo: num,
+                  result: count
+                };
+                
+                fetch('https://sheetdb.io/api/v1/kbgbkpc87u9vh', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(data),
+                })
+                  .then(response => response.json())
+                  .then(data => {
+                    // レスポンスの処理
+                    console.log(data);
+                    })
+                  .catch(error => {
+                    // エラーハンドリング
+                    console.error('データの送信に失敗しました:', error);
+                    });
+                  }
+                
+
+              //カウントダウン10
+              function decrementCountdown_interval2() {
+                  if(intervalId1sFlag === 1){
+                  countdown--;
+                  console.log(countdown);//obniz.display.print(countdown);
+                  document.getElementById('countdown').innerText = countdown;
+                  if (countdown === 0 && intervalId1sFlag === 1) {
+                      clearInterval(intervalId2);
+                      isStartPress = 0;
+                      document.getElementById('countdown').innerText = "";
+                      document.getElementById('title').innerText = "Finiiiiiiiish!!!!!!";
+                      document.getElementById('result').innerText = "";
+                      intervalId1sFlag = 0;
+                      intervalId2sFlag = 1;
+                      clear_button();
+                      obniz.display.clear();
+                      obniz.display.print("!!!!Finish!!!!");
+                      obniz.display.print(" ∧＿∧　\n");
+                      obniz.display.print("（　'∀'）<ty\n");
+                      }
+                  }
+              }
+
+
+              //カウントダウン3
+              var countdown = 3;
+              var intervalId1;
+              var intervalId1sFlag=0;
+              var intervalId2sFlag = 0;
+              var isStartPress = 0;
+              function decrementCountdown_interval1() {
+                  countdown--;
+                  console.log(countdown);
+                  document.getElementById('countdown').innerText = countdown;
+                  if (countdown === 0 && intervalId1sFlag === 0) {
+                      clearInterval(intervalId1);//最後に処理される
+                      document.getElementById('countdown').innerText = "";
+                      document.getElementById('title').innerText = "GOOOOOOOOOOOOO!!!!!";
+                      intervalId1sFlag = 1;
+                      countdown = 11;
+                      yellow_button();
+                  }
+              }
+
+              //resultの表示
+              function result(){
+                isResultPress = 1;
+                if(count > 0){
+                  document.getElementById('result').innerText = "Your result:" + count + ".Thank you for playing!!!";
+                  obniz.display.print(":)")
+                }else{
+                  document.getElementById('result').innerText = "You didn't push even once time.\n You can choose to play or get out here.";
+                  obniz.display.print(":(")
+                }
+              }
+
+              var count = 0;
+              //buttonを使えるようにする
+              function yellow_button(){
+                var button = obniz.wired("Keyestudio_Button", {signal:0, vcc:1, gnd:2});
+                obniz.display.print("!!!!START!!!!");
+                obniz.display.print(" ∧＿∧　\n");
+                obniz.display.print("（　´∀｀）\n");
+                obniz.display.print("（　   ）\n");
+                obniz.display.print("｜ ｜　｜\n");
+                obniz.display.print("（_＿）＿）\n");
+                button.onchange = function(pressed){
+                    //obniz.display.print("pressed:" + pressed); pressed == true or false
+                      if(pressed === false){
+                          count++;
+                          document.getElementById('result').innerText = count;   
+                      }
+                  }
+              }
+
+              //ボタンを使えなくする
+              function clear_button(){
+                var speaker = obniz.wired("Keyestudio_Buzzer", {signal:0, vcc:1, gnd:2});
+                //speaker.play(1000) // 1000 Hz
+              }
+
+              function clearstatement(){
+                  document.getElementById('countdown').innerText = ""
+                  document.getElementById('result').innerText = ""
+                  document.getElementById('text').value = ""
+                  obniz.display.clear();
+                  clearInterval(c_Interval);
+                  clearInterval(clearstatement);
+                  isResetPress = 0;
+                  isResultPress = 0;
+                  isStartPress = 0;
+              }
+
+              function notification1(){
+                document.getElementById('result').innerText = "You should play and get result."
+              }
+              
+              function notification2(){
+                document.getElementById('result2').innerText = "You should input StudentNo."
+              }
+
+
+              var submitFlag=0;
+              $('#submit').click(function(){
+                var textValue = document.getElementById('text').value;
+                if(textValue != "" && count>0 && submitFlag === 0){
+                  postdata();
+                  submitFlag=1;
+                }else if(textValue != "" && count === 0){
+                  notification1();
+                  document.getElementById('result2').innerText="";
+                }else if(textValue == "" && count>0){
+                  notification2();
+                  document.getElementById('result').innerText="";
+                }else{
+                  notification1();
+                  notification2();
+                }
+
+                // sheetDBにデータをPOSTする
+              });
+
+              //ボタン
+              var scene = 0;
+              $('#start_button').click(function(){
+                obniz.display.clear();
+                  if(isStartPress === 0){
+                      countdown = 4;
+                      isStartPress = 1;
+                      document.getElementById('title').innerText = "You just keep to have to push the Yellow-button! Are you ready?"
+                      //countdownTimer();
+                      //setTimeout(3000, Timer());
+                      intervalId1 = setInterval(decrementCountdown_interval1, 1000);
+                      intervalId2 = setInterval(decrementCountdown_interval2, 1000);
+                  }
+              });
+
+              //正味resetも挙動は良くない
+              var isResetPress = 0;
+              var c_Interval;
+              $('#reset_button').click(function(){
+                  if(isResetPress === 0){
+                    isResetPress = 1;
+                    count = 0;
+                    document.getElementById('countdown').innerText = "RESET"
+                    c_Interval = setInterval(clearstatement, 3000);
+                    document.getElementById('title').innerText = "!!Welcome Push Button Gaaaaaaaaame!!"
+                    document.getElementById('result').innerText = ""
+                    if(isStartPress === 1){//startが動いてた時にresetを押してもresetされるようにする
+                      clearInterval(intervalId1);
+                      clearInterval(intervalId2);
+                      document.getElementById('countdown').innerText = "RESET"
+                      c_Interval = setInterval(clearstatement, 3000);
+                    }else if(isResultPress === 1){
+                      document.getElementById('countdown').innerText = "RESET"
+                      c_Interval = setInterval(clearstatement, 3000);
+                    }
+                  }
+                });
+
+              var isResultPress = 0;
+              $('#result_button').click(function(){
+                result();
+              });
+
+
+              $('#get_button').click(function(){
+                var textValue = document.getElementById('text').value;
+                if(textValue === ""){
+                  notification2();
+                }else{
+                  getdata();
+                  if(parsedData.StudentNo === textValue){
+                    document.getElementById('result').innerText = "Your last result:" + parsedData.result;
+                  }else{}
+                }
+              });
+            
+          }
+          
+
+            
+
+
+
+//START -> <h1>を変える, ボタンを使えるようにする, <h2>にカウンターが出てくる
+//mainの順番 -> startを押すと、//STARTが動く
+
+        </script>
+    </body>
+</html>
