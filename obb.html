@@ -38,7 +38,7 @@
         <!--JS-->
 
         <script>
-          var obniz = new Obniz("7238-6542");
+          var obniz = new Obniz("YourObnizID");
           obniz.onconnect = async function() {//接続したら.
 
 
@@ -48,7 +48,7 @@
             //get
             var parsedData;
             function getdata(){
-              fetch('https://sheetdb.io/api/v1/kbgbkpc87u9vh')
+              fetch('ENDPOINT')
               .then(function (response) {
                 return response.json();
               })
@@ -69,7 +69,7 @@
                   result: count
                 };
                 
-                fetch('https://sheetdb.io/api/v1/kbgbkpc87u9vh', {
+                fetch('ENDPOINT', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json'
